@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.redis.core.RedisHash;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -14,8 +15,7 @@ import javax.validation.constraints.Size;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "USER_REFRESH_TOKEN")
+@RedisHash(value = "refreshToken", timeToLive = 60)
 public class UserRefreshToken {
     @JsonIgnore
     @Id

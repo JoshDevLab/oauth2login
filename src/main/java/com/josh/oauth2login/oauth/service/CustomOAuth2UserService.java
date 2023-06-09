@@ -32,13 +32,15 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private OAuth2User process(OAuth2UserRequest userRequest, OAuth2User user) {
 
+        //ProviderType 가져오기(GOOGLE, FACEBOOK, NAVER, KAKAO)
         ProviderType providerType = ProviderType.valueOf(userRequest.getClientRegistration().getRegistrationId().toUpperCase());
 
+        //ProviderType 에 따른 유저정보 객체로 가져오기
         OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(providerType, user.getAttributes());
         User savedUser = userRepository.findByUserId(userInfo.getId());
 
         if (savedUser != null) {
-            if (providerType != savedUser.getProviderType()) {
+            if (providerType != savedUser.getProviderType()) { //저장된 유저가 ProviderType 이 다르게 접속이 온경우
                 throw new OAuthProviderMissMatchException(
                         "Looks like you're signed up with " + providerType +
                         " account. Please use your " + savedUser.getProviderType() + " account to login."
