@@ -15,7 +15,8 @@ import javax.validation.constraints.Size;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@RedisHash(value = "refreshToken", timeToLive = 60)
+@Entity
+@Table(name = "USER_REFRESH_TOKEN")
 public class UserRefreshToken {
     @JsonIgnore
     @Id
