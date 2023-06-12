@@ -1,6 +1,6 @@
 package com.josh.oauth2login.oauth.service;
 
-import com.josh.oauth2login.api.entity.user.User;
+import com.josh.oauth2login.api.entity.user.Users;
 import com.josh.oauth2login.api.repository.user.UserRepository;
 import com.josh.oauth2login.oauth.entity.UserPrincipal;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUserId(username);
+        Users user = userRepository.findByUserId(username);
         if (user == null) {
             throw new UsernameNotFoundException("username 을 찾지 못했습니다.");
         }

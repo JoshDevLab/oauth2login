@@ -1,6 +1,6 @@
 package com.josh.oauth2login.api.service;
 
-import com.josh.oauth2login.api.entity.user.User;
+import com.josh.oauth2login.api.entity.user.Users;
 import com.josh.oauth2login.api.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
 
-    public User getUser(String userId) {
+    public Users getUser(String userId) {
         return userRepository.findByUserId(userId);
     }
 }

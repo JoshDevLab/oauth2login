@@ -12,6 +12,7 @@ import com.josh.oauth2login.oauth.token.AuthToken;
 import com.josh.oauth2login.oauth.token.AuthTokenProvider;
 import com.josh.oauth2login.utils.CookieUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -34,6 +35,7 @@ import java.util.Optional;
 import static com.josh.oauth2login.oauth.repository.OAuth2AuthorizationRequestBasedOnCookieRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
 import static com.josh.oauth2login.oauth.repository.OAuth2AuthorizationRequestBasedOnCookieRepository.REFRESH_TOKEN;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
@@ -62,6 +64,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         // 요청에서 REDIRECT_URI_PARAM_COOKIE_NAME 이름의 쿠키 값을 가져옴
         Optional<String> redirectUri = CookieUtil.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME)
                 .map(Cookie::getValue);
+
+//        log.info("redirectUri ====> {}", redirectUri);
 
         // 리디렉션 URI가 존재하고, 유효한 리디렉션 URI가 아닌 경우 예외를 throw
         if (redirectUri.isPresent() && !isAuthorizedRedirectUri(redirectUri.get())) {
@@ -147,6 +151,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         return appProperties.getOauth2().getAuthorizedRedirectUris()
                 .stream()
                 .anyMatch(authorizedRedirectUri -> {
+//                    log.info("authorizedRedirectUri ====> {}", authorizedRedirectUri);
                     // Only validate host and port. Let the clients use different paths if they want to
                     URI authorizedURI = URI.create(authorizedRedirectUri);
                     if (authorizedURI.getHost().equalsIgnoreCase(clientRedirectUri.getHost())

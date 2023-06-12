@@ -18,8 +18,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "USER")
-public class User {
+@Table(name = "USERS")
+public class Users {
     @JsonIgnore
     @Id
     @Column(name = "USER_SEQ")
@@ -75,7 +75,7 @@ public class User {
     @NotNull
     private LocalDateTime modifiedAt;
 
-    public User(
+    public Users(
             @NotNull @Size(max = 64) String userId,
             @NotNull @Size(max = 100) String username,
             @NotNull @Size(max = 512) String email,

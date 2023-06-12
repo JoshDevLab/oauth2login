@@ -1,6 +1,6 @@
 package com.josh.oauth2login.oauth.entity;
 
-import com.josh.oauth2login.api.entity.user.User;
+import com.josh.oauth2login.api.entity.user.Users;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -85,7 +85,7 @@ public class UserPrincipal implements OAuth2User, UserDetails, OidcUser {
         return null;
     }
 
-    public static UserPrincipal create(User user) {
+    public static UserPrincipal create(Users user) {
         return new UserPrincipal(
                 user.getUserId(),
                 user.getPassword(),
@@ -95,7 +95,7 @@ public class UserPrincipal implements OAuth2User, UserDetails, OidcUser {
         );
     }
 
-    public static UserPrincipal create(User user, Map<String, Object> attributes) {
+    public static UserPrincipal create(Users user, Map<String, Object> attributes) {
         UserPrincipal userPrincipal = create(user);
         userPrincipal.setAttributes(attributes);
 

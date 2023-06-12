@@ -1,6 +1,22 @@
 server:
   port: 8081
 
+cors:
+  allowed-origins: 'http://localhost:3000'
+  allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+  allowed-headers: '*'
+  max-age: 3600
+
+# 토큰 관련 secret Key 및 RedirectUri 설정
+app:
+  auth:
+    tokenSecret: 926D96C90030DD58429D2751AC1BDBBC
+    tokenExpiry: 1800000
+    refreshTokenExpiry: 604800000
+  oauth2:
+    authorizedRedirectUris:
+      - http://localhost:3000/oauth/redirect
+
 spring:
 
   h2:
@@ -33,26 +49,47 @@ spring:
         google:
           clientId: 340165487474-f6rv04513gt94itd139vkap088fbk4h9.apps.googleusercontent.com
           clientSecret: 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
-          redirect-uri: http://localhost:8081/login/oauth2/code/google
           scope:
             - email
             - profile
-  cors:
-    allowed-origins: 'http://localhost:3000'
-    allowed-methods: GET,POST,PUT,DELETE,OPTIONS
-    allowed-headers: '*'
-    max-age: 3600
+        naver:
+          clientId: SUcaQTjiIp0032MF4OwC
+          clientSecret: e62EPxmkKb
+          clientAuthenticationMethod: post
+          authorizationGrantType: authorization_code
+          redirectUri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
+          scope:
+            - nickname
+            - email
+            - profile_image
+          clientName: Naver
+        kakao:
+          clientId: 7080ec0b11f482a02b63ed833f8b90ed
+          clientSecret: aZLzFeM1L0GGp6F30mpCxKUZUvHYz85Z
+          clientAuthenticationMethod: post
+          authorizationGrantType: authorization_code
+          redirectUri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
+          scope:
+            - profile_nickname
+            - profile_image
+            - account_email
+          clientName: Kakao
+      # Provider 설정
+      provider:
+        naver:
+          authorizationUri: https://nid.naver.com/oauth2.0/authorize
+          tokenUri: https://nid.naver.com/oauth2.0/token
+          userInfoUri: https://openapi.naver.com/v1/nid/me
+          userNameAttribute: response
+        kakao:
+          authorizationUri: https://kauth.kakao.com/oauth/authorize
+          tokenUri: https://kauth.kakao.com/oauth/token
+          userInfoUri: https://kapi.kakao.com/v2/user/me
+          userNameAttribute: id
 
   # jwt secret key
   jwt:
     secret: XNuPmL/do82G77OpWucoQl+WBXFBpAF6LoPNWj7/RJk=
 
 
-  app:
-    auth:
-      tokenSecret: 926D96C90030DD58429D2751AC1BDBBC
-      tokenExpiry: 1800000
-      refreshTokenExpiry: 604800000
-    oauth2:
-      authorizedRedirectUris:
-        - http://localhost:3000/oauth/redirect
+
