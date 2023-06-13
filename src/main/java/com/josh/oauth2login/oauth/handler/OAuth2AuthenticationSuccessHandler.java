@@ -75,7 +75,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         // 대상 URL을 redirectUri 값이 있을 경우 해당 값으로 설정하고, 없을 경우 기본 대상 URL로 설정
         String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
 
-        // 인증 토큰에서 인증된 클라이언트 등록 ID를 가져와 ProviderType으로 변환
+        // 인증 토큰에서 인증된 클라이언트 등록 ID를 가져와 ProviderType 으로 변환
         OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) authentication;
         ProviderType providerType = ProviderType.valueOf(authToken.getAuthorizedClientRegistrationId().toUpperCase());
 

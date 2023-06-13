@@ -11,8 +11,8 @@ cors:
 app:
   auth:
     tokenSecret: 926D96C90030DD58429D2751AC1BDBBC
-    tokenExpiry: 1800000
-    refreshTokenExpiry: 604800000
+    tokenExpiry: 10
+    refreshTokenExpiry: 30
   oauth2:
     authorizedRedirectUris:
       - http://localhost:3000/oauth/redirect

@@ -13,6 +13,7 @@ import com.josh.oauth2login.utils.CookieUtil;
 import com.josh.oauth2login.utils.HeaderUtil;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Cookie;
 import java.util.Date;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
@@ -86,6 +88,9 @@ public class AuthController {
 
     @GetMapping("/refresh")
     public ApiResponse refreshToken (HttpServletRequest request, HttpServletResponse response) {
+
+        log.info("refresh 컨트롤러 접근");
+
         // access token 확인
         String accessToken = HeaderUtil.getAccessToken(request);
         AuthToken authToken = tokenProvider.convertAuthToken(accessToken);
@@ -122,7 +127,7 @@ public class AuthController {
         AuthToken newAccessToken = tokenProvider.createAuthToken(
                 userId,
                 roleType.getCode(),
-                new Date(now.getTime() + appProperties.getAuth().getTokenExpiry())
+                new Date(now.getTime() + 1800000000)
         );
 
         long validTime = authRefreshToken.getTokenClaims().getExpiration().getTime() - now.getTime();
