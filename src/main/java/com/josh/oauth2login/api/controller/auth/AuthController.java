@@ -45,6 +45,8 @@ public class AuthController {
             HttpServletResponse response,
             @RequestBody AuthReqModel authReqModel
     ) {
+        log.info("=================== login 컨트롤러 접근 ==================");
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         authReqModel.getId(),
@@ -89,7 +91,7 @@ public class AuthController {
     @GetMapping("/refresh")
     public ApiResponse refreshToken (HttpServletRequest request, HttpServletResponse response) {
 
-        log.info("refresh 컨트롤러 접근");
+        log.info("=================== refresh 컨트롤러 접근 ==================");
 
         // access token 확인
         String accessToken = HeaderUtil.getAccessToken(request);

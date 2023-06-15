@@ -62,6 +62,7 @@ public class AuthToken {
             log.info("Invalid JWT token.");
         } catch (ExpiredJwtException e) {
             log.info("Expired JWT token.", e);
+            throw new JwtException("Expired JWT token.");
         } catch (UnsupportedJwtException e) {
             log.info("Unsupported JWT token.");
         } catch (IllegalArgumentException e) {

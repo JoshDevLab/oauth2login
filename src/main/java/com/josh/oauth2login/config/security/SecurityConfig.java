@@ -5,6 +5,7 @@ import com.josh.oauth2login.config.properties.AppProperties;
 import com.josh.oauth2login.config.properties.CorsProperties;
 import com.josh.oauth2login.oauth.entity.RoleType;
 import com.josh.oauth2login.oauth.exception.RestAuthenticationEntryPoint;
+import com.josh.oauth2login.oauth.filter.JwtExceptionFilter;
 import com.josh.oauth2login.oauth.filter.TokenAuthenticationFilter;
 import com.josh.oauth2login.oauth.handler.OAuth2AuthenticationFailureHandler;
 import com.josh.oauth2login.oauth.handler.OAuth2AuthenticationSuccessHandler;
@@ -45,6 +46,7 @@ public class SecurityConfig {
     private final CustomOAuth2UserService oAuth2UserService;
     private final TokenAccessDeniedHandler tokenAccessDeniedHandler;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
+    private final JwtExceptionFilter jwtExceptionFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -86,7 +88,8 @@ public class SecurityConfig {
                 .successHandler(oAuth2AuthenticationSuccessHandler())
                 .failureHandler(oAuth2AuthenticationFailureHandler())
                 .and()
-                .addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionFilter, TokenAuthenticationFilter.class);
         return http.build();
     }
 

@@ -27,7 +27,6 @@ public class OAuth2AuthorizationRequestBasedOnCookieRepository implements Author
         if (authorizationRequest == null) {
             CookieUtil.deleteCookie(request, response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
             CookieUtil.deleteCookie(request, response, REDIRECT_URI_PARAM_COOKIE_NAME);
-            CookieUtil.deleteCookie(request, response, REFRESH_TOKEN);
             return;
         }
         
@@ -47,6 +46,11 @@ public class OAuth2AuthorizationRequestBasedOnCookieRepository implements Author
         CookieUtil.deleteCookie(request, response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
         CookieUtil.deleteCookie(request, response, REDIRECT_URI_PARAM_COOKIE_NAME);
         CookieUtil.deleteCookie(request, response, REFRESH_TOKEN);
+    }
+
+    public void removeAuthorizationRequestCookiesNotRefresh(HttpServletRequest request, HttpServletResponse response) {
+        CookieUtil.deleteCookie(request, response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
+        CookieUtil.deleteCookie(request, response, REDIRECT_URI_PARAM_COOKIE_NAME);
     }
 
 }

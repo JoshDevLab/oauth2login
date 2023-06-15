@@ -12,12 +12,15 @@ app:
   auth:
     tokenSecret: 926D96C90030DD58429D2751AC1BDBBC
     tokenExpiry: 10
-    refreshTokenExpiry: 30
+    refreshTokenExpiry: 3000000
   oauth2:
     authorizedRedirectUris:
       - http://localhost:3000/oauth/redirect
 
 spring:
+  logging:
+    level:
+      org.springframework.web.filter: DEBUG
 
   h2:
     console:

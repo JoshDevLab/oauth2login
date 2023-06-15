@@ -46,7 +46,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     private final OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         String targetUrl = determineTargetUrl(request, response, authentication);
 
         if (response.isCommitted()) {
@@ -58,36 +58,25 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 
-    @Override
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-
-        // 요청에서 REDIRECT_URI_PARAM_COOKIE_NAME 이름의 쿠키 값을 가져옴
         Optional<String> redirectUri = CookieUtil.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME)
                 .map(Cookie::getValue);
 
-//        log.info("redirectUri ====> {}", redirectUri);
-
-        // 리디렉션 URI가 존재하고, 유효한 리디렉션 URI가 아닌 경우 예외를 throw
-        if (redirectUri.isPresent() && !isAuthorizedRedirectUri(redirectUri.get())) {
+        if(redirectUri.isPresent() && !isAuthorizedRedirectUri(redirectUri.get())) {
             throw new IllegalArgumentException("Sorry! We've got an Unauthorized Redirect URI and can't proceed with the authentication");
         }
 
-        // 대상 URL을 redirectUri 값이 있을 경우 해당 값으로 설정하고, 없을 경우 기본 대상 URL로 설정
         String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
 
-        // 인증 토큰에서 인증된 클라이언트 등록 ID를 가져와 ProviderType 으로 변환
         OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) authentication;
         ProviderType providerType = ProviderType.valueOf(authToken.getAuthorizedClientRegistrationId().toUpperCase());
 
-        // 인증된 사용자의 정보와 권한을 가져옴
         OidcUser user = ((OidcUser) authentication.getPrincipal());
         OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(providerType, user.getAttributes());
         Collection<? extends GrantedAuthority> authorities = ((OidcUser) authentication.getPrincipal()).getAuthorities();
 
-        // 권한에 따라 RoleType을 결정
         RoleType roleType = hasAuthority(authorities, RoleType.ADMIN.getCode()) ? RoleType.ADMIN : RoleType.USER;
 
-        // 현재 시간을 기준으로 액세스 토큰 생성
         Date now = new Date();
         AuthToken accessToken = tokenProvider.createAuthToken(
                 userInfo.getId(),
@@ -96,32 +85,29 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         );
 
         // refresh 토큰 설정
-        // 리프레시 토큰 만료 시간 설정
         long refreshTokenExpiry = appProperties.getAuth().getRefreshTokenExpiry();
 
-        // 현재 시간을 기준으로 리프레시 토큰 생성
         AuthToken refreshToken = tokenProvider.createAuthToken(
                 appProperties.getAuth().getTokenSecret(),
                 new Date(now.getTime() + refreshTokenExpiry)
         );
 
-        // DB에 리프레시 토큰 저장
+        // DB 저장
         UserRefreshToken userRefreshToken = userRefreshTokenRepository.findByUserId(userInfo.getId());
         if (userRefreshToken != null) {
             userRefreshToken.setRefreshToken(refreshToken.getToken());
         } else {
             userRefreshToken = new UserRefreshToken(userInfo.getId(), refreshToken.getToken());
-            userRefreshTokenRepository.save(userRefreshToken);
+            userRefreshTokenRepository.saveAndFlush(userRefreshToken);
         }
 
-        // 쿠키의 최대 수명 설정
         int cookieMaxAge = (int) refreshTokenExpiry / 60;
 
-        // 기존의 REFRESH_TOKEN 쿠키 삭제 및 새로운 쿠키 추가
         CookieUtil.deleteCookie(request, response, REFRESH_TOKEN);
         CookieUtil.addCookie(response, REFRESH_TOKEN, refreshToken.getToken(), cookieMaxAge);
 
-        // 대상 URL에 액세스 토큰을 쿼리 파라미터로 redirect
+//        CookieUtil.addCookie(response, "access_token", accessToken.getToken(), cookieMaxAge);
+
         return UriComponentsBuilder.fromUriString(targetUrl)
                 .queryParam("token", accessToken.getToken())
                 .build().toUriString();
@@ -129,7 +115,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     protected void clearAuthenticationAttributes(HttpServletRequest request, HttpServletResponse response) {
         super.clearAuthenticationAttributes(request);
-        authorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
+        authorizationRequestRepository.removeAuthorizationRequestCookiesNotRefresh(request, response);
     }
 
     private boolean hasAuthority(Collection<? extends GrantedAuthority> authorities, String authority) {
@@ -151,10 +137,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         return appProperties.getOauth2().getAuthorizedRedirectUris()
                 .stream()
                 .anyMatch(authorizedRedirectUri -> {
-//                    log.info("authorizedRedirectUri ====> {}", authorizedRedirectUri);
                     // Only validate host and port. Let the clients use different paths if they want to
                     URI authorizedURI = URI.create(authorizedRedirectUri);
-                    if (authorizedURI.getHost().equalsIgnoreCase(clientRedirectUri.getHost())
+                    if(authorizedURI.getHost().equalsIgnoreCase(clientRedirectUri.getHost())
                             && authorizedURI.getPort() == clientRedirectUri.getPort()) {
                         return true;
                     }
