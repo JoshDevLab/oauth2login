@@ -31,23 +31,16 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
-        String requestURI = request.getRequestURI();
+        String requestURI = request.getRequestURI(); // 요청 URI
         log.info("requestURI {}", requestURI);
         String tokenStr = HeaderUtil.getAccessToken(request);
-//        log.info("tokenStr ====> {}", tokenStr);
+        log.info("tokenStr ====> {}", tokenStr);
         AuthToken token = tokenProvider.convertAuthToken(tokenStr);
 
         if (requestURI.equals("/api/v1/auth/refresh")) { // refresh token 발급을 위해 넘어오면 넘김
             log.info("requestURI.equals(\"/api/v1/auth/refresh\")");
-            // refresh token
-            String refreshTokenStr = CookieUtil.getCookie(request, REFRESH_TOKEN)
-                    .map(Cookie::getValue)
-                    .orElse((null));
-            log.info("refreshTokenStr {}", refreshTokenStr);
-//            AuthToken refreshToken = tokenProvider.convertAuthToken(refreshTokenStr);
-//            Authentication authentication = tokenProvider.getAuthentication(refreshToken);
-//            SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(authentication, authentication));
             filterChain.doFilter(request, response);
+            return;
         }
 
         if (token.validate()) {

@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.security.Key;
 import java.util.Date;
 
+import static com.josh.oauth2login.common.JwtErrorCode.EXPIRED_TOKEN;
+
 @Slf4j
 @RequiredArgsConstructor
 public class AuthToken {
@@ -62,7 +64,7 @@ public class AuthToken {
             log.info("Invalid JWT token.");
         } catch (ExpiredJwtException e) {
             log.info("Expired JWT token.", e);
-            throw new JwtException("Expired JWT token.");
+            throw new JwtException(EXPIRED_TOKEN); // 엔트리 포인트로 보내지않음
         } catch (UnsupportedJwtException e) {
             log.info("Unsupported JWT token.");
         } catch (IllegalArgumentException e) {

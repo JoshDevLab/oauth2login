@@ -2,16 +2,15 @@ package com.josh.oauth2login.api.controller.auth;
 
 import com.josh.oauth2login.api.entity.auth.AuthReqModel;
 import com.josh.oauth2login.api.entity.user.UserRefreshToken;
+import com.josh.oauth2login.api.entity.user.Users;
 import com.josh.oauth2login.api.repository.user.UserRefreshTokenRepository;
+import com.josh.oauth2login.api.service.UserService;
 import com.josh.oauth2login.common.ApiResponse;
 import com.josh.oauth2login.config.properties.AppProperties;
-import com.josh.oauth2login.oauth.entity.RoleType;
 import com.josh.oauth2login.oauth.entity.UserPrincipal;
 import com.josh.oauth2login.oauth.token.AuthToken;
 import com.josh.oauth2login.oauth.token.AuthTokenProvider;
 import com.josh.oauth2login.utils.CookieUtil;
-import com.josh.oauth2login.utils.HeaderUtil;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,6 +34,7 @@ public class AuthController {
     private final AuthTokenProvider tokenProvider;
     private final AuthenticationManager authenticationManager;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
+    private final UserService userService;
 
     private final static long THREE_DAYS_MSEC = 259200000;
     private final static String REFRESH_TOKEN = "refresh_token";
@@ -45,7 +45,6 @@ public class AuthController {
             HttpServletResponse response,
             @RequestBody AuthReqModel authReqModel
     ) {
-        log.info("=================== login 컨트롤러 접근 ==================");
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -88,47 +87,36 @@ public class AuthController {
         return ApiResponse.success("token", accessToken.getToken());
     }
 
-    @GetMapping("/refresh")
+    @PostMapping("/refresh")
     public ApiResponse refreshToken (HttpServletRequest request, HttpServletResponse response) {
-
-        log.info("=================== refresh 컨트롤러 접근 ==================");
-
-        // access token 확인
-        String accessToken = HeaderUtil.getAccessToken(request);
-        AuthToken authToken = tokenProvider.convertAuthToken(accessToken);
-        if (!authToken.validate()) {
-            return ApiResponse.invalidAccessToken();
-        }
-
-        // expired access token 인지 확인
-        Claims claims = authToken.getExpiredTokenClaims();
-        if (claims == null) {
-            return ApiResponse.notExpiredTokenYet();
-        }
-
-        String userId = claims.getSubject();
-        RoleType roleType = RoleType.of(claims.get("role", String.class));
 
         // refresh token
         String refreshToken = CookieUtil.getCookie(request, REFRESH_TOKEN)
                 .map(Cookie::getValue)
                 .orElse((null));
+//        log.info("refreshToken {}", refreshToken);
         AuthToken authRefreshToken = tokenProvider.convertAuthToken(refreshToken);
+//        log.info("authRefreshToken {}", authRefreshToken);
 
         if (!authRefreshToken.validate()) {
             return ApiResponse.invalidRefreshToken();
         }
 
         // userId refresh token 으로 DB 확인
-        UserRefreshToken userRefreshToken = userRefreshTokenRepository.findByUserIdAndRefreshToken(userId, refreshToken);
+        UserRefreshToken userRefreshToken = userRefreshTokenRepository.findByRefreshToken(refreshToken);
         if (userRefreshToken == null) {
             return ApiResponse.invalidRefreshToken();
         }
+        String userId = userRefreshToken.getUserId();
+
+        Users user = userService.getUser(userId);
+
+//        log.info("user.getRoleType() {}", user.getRoleType());
 
         Date now = new Date();
         AuthToken newAccessToken = tokenProvider.createAuthToken(
                 userId,
-                roleType.getCode(),
+                String.valueOf(user.getRoleType()),
                 new Date(now.getTime() + 1800000000)
         );
 
@@ -146,6 +134,7 @@ public class AuthController {
 
             // DB에 refresh 토큰 업데이트
             userRefreshToken.setRefreshToken(authRefreshToken.getToken());
+            userRefreshTokenRepository.saveAndFlush(userRefreshToken);
 
             int cookieMaxAge = (int) refreshTokenExpiry / 60;
             CookieUtil.deleteCookie(request, response, REFRESH_TOKEN);
@@ -153,6 +142,13 @@ public class AuthController {
         }
 
         return ApiResponse.success("token", newAccessToken.getToken());
+    }
+
+    @PostMapping("/test")
+    public String test() {
+        log.info("test Controller");
+//        log.info("user info =====> {}", user);
+        return "통신성공";
     }
 }
 
