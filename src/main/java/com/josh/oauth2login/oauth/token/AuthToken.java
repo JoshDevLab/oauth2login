@@ -52,6 +52,7 @@ public class AuthToken {
     }
 
     public Claims getTokenClaims() { //토큰의 claims 를 가져오는 메서드
+        log.info("getTokenClaims 메서드 진입");
         try {
             return Jwts.parserBuilder()
                     .setSigningKey(key)

@@ -69,7 +69,6 @@ public class SecurityConfig {
                 .accessDeniedHandler(tokenAccessDeniedHandler)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/v1/auth/refresh").permitAll()
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .antMatchers("/api/**").hasAnyAuthority(RoleType.USER.getCode())
                 .antMatchers("/api/**/admin/**").hasAnyAuthority(RoleType.ADMIN.getCode())

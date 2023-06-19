@@ -18,10 +18,6 @@ app:
       - http://localhost:3000/oauth/redirect
 
 spring:
-  logging:
-    level:
-      org.springframework.web.filter: DEBUG
-
   h2:
     console:
       enabled: true
