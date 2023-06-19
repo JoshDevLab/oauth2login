@@ -29,7 +29,9 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } catch (JwtException e) {
 //            log.info("e.getMessage() {}", e.getMessage());
-            setErrorResponse(HttpStatus.UNAUTHORIZED, response, e);
+            if (!(request.getRequestURI().equals("/api/v1/auth/refresh"))) {
+                setErrorResponse(HttpStatus.UNAUTHORIZED, response, e);
+            }
         }
     }
 

@@ -13,10 +13,13 @@ import com.josh.oauth2login.oauth.token.AuthTokenProvider;
 import com.josh.oauth2login.utils.CookieUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -107,8 +110,8 @@ public class AuthController {
         if (userRefreshToken == null) {
             return ApiResponse.invalidRefreshToken();
         }
-        String userId = userRefreshToken.getUserId();
 
+        String userId = userRefreshToken.getUserId();
         Users user = userService.getUser(userId);
 
 //        log.info("user.getRoleType() {}", user.getRoleType());
@@ -116,7 +119,7 @@ public class AuthController {
         Date now = new Date();
         AuthToken newAccessToken = tokenProvider.createAuthToken(
                 userId,
-                String.valueOf(user.getRoleType()),
+                String.valueOf(user.getRoleType().getCode()),
                 new Date(now.getTime() + 1800000000)
         );
 
@@ -145,10 +148,11 @@ public class AuthController {
     }
 
     @PostMapping("/test")
-    public String test() {
-        log.info("test Controller");
+    public ResponseEntity<User> test(@AuthenticationPrincipal User user) {
+//        log.info("user {}", user.toString());
+//        log.info("test Controller");
 //        log.info("user info =====> {}", user);
-        return "통신성공";
+        return ResponseEntity.ok(user);
     }
 }
 
