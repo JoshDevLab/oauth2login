@@ -13,13 +13,10 @@ import com.josh.oauth2login.oauth.token.AuthTokenProvider;
 import com.josh.oauth2login.utils.CookieUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -148,12 +145,10 @@ public class AuthController {
     }
 
     @PostMapping("/test")
-    public ResponseEntity<Users> test(@AuthenticationPrincipal User user) {
-
+    public String test() {
         log.info("test Controller");
-        System.out.println("test Controller");
 //        log.info("user info =====> {}", user);
-        return ResponseEntity.ok(userService.getUser(user.getUsername()));
+        return "통신성공";
     }
 }
 

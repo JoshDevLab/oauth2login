@@ -40,11 +40,10 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         if (requestURI.equals("/api/v1/auth/refresh")) { // refresh token 발급을 위해 넘어오면 넘김
             log.info("requestURI.equals(\"/api/v1/auth/refresh\")");
             filterChain.doFilter(request, response);
-//            return;
+            return;
         }
 
         if (token.validate()) {
-            log.info("token.validate() pass");
             Authentication authentication = tokenProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
