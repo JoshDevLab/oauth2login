@@ -120,7 +120,7 @@ public class AuthController {
         AuthToken newAccessToken = tokenProvider.createAuthToken(
                 userId,
                 String.valueOf(user.getRoleType().getCode()),
-                new Date(now.getTime() + 1800000000)
+                new Date(now.getTime() + appProperties.getAuth().getTokenExpiry())
         );
 
         long validTime = authRefreshToken.getTokenClaims().getExpiration().getTime() - now.getTime();

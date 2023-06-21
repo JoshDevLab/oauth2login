@@ -40,7 +40,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         //ProviderType 에 따른 유저정보 객체로 가져오기
         OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(providerType, user.getAttributes());
 
-        log.info("userInfo.getId() ===========> {}", userInfo.getId());
+//        log.info("userInfo.getId() ===========> {}", userInfo.getId());
 
         Users savedUser = userRepository.findByUserId(userInfo.getId());
 
