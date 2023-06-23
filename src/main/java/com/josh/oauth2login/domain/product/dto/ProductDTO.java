@@ -2,12 +2,14 @@ package com.josh.oauth2login.domain.product.dto;
 
 import com.josh.oauth2login.domain.product.entity.CategoryType;
 import com.josh.oauth2login.domain.product.entity.Product;
+import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Data
+@Builder
 public class ProductDTO {
 
     @NotNull
