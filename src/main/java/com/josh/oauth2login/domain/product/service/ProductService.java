@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -20,5 +21,9 @@ public class ProductService {
     public Product registerProduct(ProductDTO productDTO) {
         Product product = productDTO.toEntity();
         return productRepository.save(product);
+    }
+
+    public List<Product> getProduct() {
+        return productRepository.findAll();
     }
 }
