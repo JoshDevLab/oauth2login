@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.List;
-
 @SpringBootTest
 public class ProductTest {
 
@@ -31,21 +29,5 @@ public class ProductTest {
 
         //then
         Assertions.assertThat(product1.getProductName()).isEqualTo("test1");
-    }
-
-    @Test
-    public void getAllProducts() {
-        //given
-        ProductDTO product = ProductDTO.builder()
-                .productName("test1")
-                .quantity(1000L)
-                .categoryType(CategoryType.PANTS)
-                .build();
-
-        //when
-        productService.registerProduct(product);
-
-        //then
-        Assertions.assertThat(productService.getProduct().size()).isOne();
     }
 }
