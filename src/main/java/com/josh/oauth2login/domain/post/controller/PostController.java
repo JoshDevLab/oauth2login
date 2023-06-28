@@ -1,7 +1,6 @@
 package com.josh.oauth2login.domain.post.controller;
 
 import com.josh.oauth2login.domain.post.dto.PostDto;
-import com.josh.oauth2login.domain.post.entity.Post;
 import com.josh.oauth2login.domain.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
