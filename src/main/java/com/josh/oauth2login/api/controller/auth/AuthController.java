@@ -98,12 +98,12 @@ public class AuthController {
         String refreshToken = CookieUtil.getCookie(request, REFRESH_TOKEN)
                 .map(Cookie::getValue)
                 .orElse((null));
-        log.info("refreshToken {}", refreshToken);
+//        log.info("refreshToken {}", refreshToken);
         AuthToken authRefreshToken = tokenProvider.convertAuthToken(refreshToken);
 //        log.info("authRefreshToken {}", authRefreshToken);
 
         if (!authRefreshToken.validate()) {
-            log.info("authRefreshToken invalidate");
+//            log.info("authRefreshToken invalidate");
             return ApiResponse.invalidRefreshToken();
         }
 
@@ -123,7 +123,7 @@ public class AuthController {
         AuthToken newAccessToken = tokenProvider.createAuthToken(
                 userId,
                 String.valueOf(user.getRoleType().getCode()),
-                new Date(now.getTime() + 180000000)
+                new Date(now.getTime() + appProperties.getAuth().getTokenExpiry())
         );
 
         long validTime = authRefreshToken.getTokenClaims().getExpiration().getTime() - now.getTime();
