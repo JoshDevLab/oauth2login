@@ -11,7 +11,7 @@ cors:
 app:
   auth:
     tokenSecret: 926D96C90030DD58429D2751AC1BDBBC
-    tokenExpiry: 1000000
+    tokenExpiry: 10
     refreshTokenExpiry: 3000000
   oauth2:
     authorizedRedirectUris:
@@ -21,6 +21,10 @@ spring:
   logging:
     level:
       org.springframework.web.filter: DEBUG
+
+  redis:
+    host: localhost
+    port: 6379
 
   h2:
     console:
@@ -32,7 +36,7 @@ spring:
     url: jdbc:mariadb://localhost:1000/msadb
     username: root
     password: qwer1234
-  #JPA ??
+
   jpa:
     hibernate:
       ddl-auto: update

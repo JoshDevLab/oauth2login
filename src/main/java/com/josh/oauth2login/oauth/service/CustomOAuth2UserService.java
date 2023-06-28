@@ -1,6 +1,6 @@
 package com.josh.oauth2login.oauth.service;
 
-import com.josh.oauth2login.api.entity.user.Users;
+import com.josh.oauth2login.api.entity.user.MyUser;
 import com.josh.oauth2login.api.repository.user.UserRepository;
 import com.josh.oauth2login.oauth.entity.ProviderType;
 import com.josh.oauth2login.oauth.entity.RoleType;
@@ -42,7 +42,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 //        log.info("userInfo.getId() ===========> {}", userInfo.getId());
 
-        Users savedUser = userRepository.findByUserId(userInfo.getId());
+        MyUser savedUser = userRepository.findByUserId(userInfo.getId());
 
         if (savedUser != null) {
             if (providerType != savedUser.getProviderType()) { //저장된 유저가 ProviderType 이 다르게 접속이 온경우
@@ -59,9 +59,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return UserPrincipal.create(savedUser, user.getAttributes());
     }
 
-    private Users createUser(OAuth2UserInfo userInfo, ProviderType providerType) {
+    private MyUser createUser(OAuth2UserInfo userInfo, ProviderType providerType) {
         LocalDateTime now = LocalDateTime.now();
-        Users user = new Users(
+        MyUser user = new MyUser(
                 userInfo.getId(),
                 userInfo.getName(),
                 userInfo.getEmail(),
@@ -76,7 +76,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return userRepository.saveAndFlush(user);
     }
 
-    private Users updateUser(Users user, OAuth2UserInfo userInfo) {
+    private MyUser updateUser(MyUser user, OAuth2UserInfo userInfo) {
 
         if (userInfo.getName() != null && !user.getUsername().equals(userInfo.getName())) {
             user.setUsername(userInfo.getName());
