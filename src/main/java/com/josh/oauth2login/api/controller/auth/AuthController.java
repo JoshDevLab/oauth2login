@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Cookie;
 import java.util.Date;
-import java.util.Optional;
 
 @Slf4j
 @RestController
